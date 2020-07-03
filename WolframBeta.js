@@ -1,10 +1,10 @@
 
 class Graphics1D
 {
-    xmin = -10;
-    xmax = 10;
-    ymin = -10;
-    ymax = 10;
+    xmin = -5;
+    xmax = 5;
+    ymin = -5;
+    ymax = 5;
     W = 512;
     H = 512;
     gridAmplifier = 1;
@@ -214,10 +214,9 @@ function CALCULATE()
     if(document.getElementById("gridlow").checked) x.gridAmplifier=parseFloat(document.getElementById("gridamp").value);
     console.log(x.gridAmplifier+" "+typeof(x.gridAmplifier));
     x.draw();
-
-
-
 }
+
+
 function autoDraw() {
     var If = document.getElementById("func").value,
         Ixmin = parseFloat(document.getElementById("xmin").value),
@@ -240,14 +239,30 @@ function autoDraw() {
 
 console.log(math.derivative('x^2 + x', 'x').toString());
 
+function InitializeFieldsForNewton()
+{
+    var
+        Ixmin = parseFloat(document.getElementById("xmin").value),
+        Ixmax = parseFloat(document.getElementById("xmax").value),
+        Iymin = parseFloat(document.getElementById("ymin").value),
+        Iymax = parseFloat(document.getElementById("ymax").value);
+    if(document.getElementById("gridlow").checked) x.gridAmplifier=parseFloat(document.getElementById("gridamp").value);
+    x.xmax = Ixmax;
+    x.xmin = Ixmin;
+    x.ymax = Iymax;
+    x.ymin = Iymin;
+}
+
+
 
 function Newton() {
+    InitializeFieldsForNewton();
     document.getElementById("pointsholder").innerText="";
     let dx = parseFloat(document.getElementById("dx").value);
     document.getElementById("derone").style.display = "block";
     let der = math.derivative(replaceDerProblems(document.getElementById("func").value),'x').toString();
     document.getElementById("derholder").innerText = der;
-    let derfunc = math.parser().evaluate("f(x) = "+document.getElementById("derholder").innerText)
+    let derfunc = math.parser().evaluate("f(x) = "+document.getElementById("derholder").innerText);
     let secder = math.derivative(der,'x').toString();
     let secderfunc = math.parser().evaluate("f(x) = "+secder);
     console.log(derfunc(14));
@@ -269,7 +284,7 @@ function Newton() {
             iterations++;
             if(iterations>10000)
             {
-                alert("I'm an idiot");
+                alert("Something went wrong");
                 break;
             }
         }
@@ -280,8 +295,9 @@ function Newton() {
         if(critical)
         {
             displayedpoints++;
-            document.getElementById("pointsholder").innerText += "x"+displayedpoints+": "+xnext+"   |  Потребовалось итераций: "+iterations+"\n";
+            var fnow = function(x) {return eval(replaceSpecialSequence(document.getElementById("func").value));};
+            document.getElementById("pointsholder").innerText += "x"+displayedpoints+": "+xnext+"  f(x) = "+fnow(xnext)+" |  Потребовалось итераций: "+iterations+"\n";
         }
     }
-    if(displayedpoints==0) document.getElementById("pointsholder").innerText ="Экстремумы не нашлись :c";
+    if(displayedpoints==0) document.getElementById("pointsholder").innerText ="Экстремумы не нашлись :c \n Либо их нет, либо функция не удовлетворяет условиям метода.";
 }
